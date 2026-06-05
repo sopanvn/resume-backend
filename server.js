@@ -15,26 +15,24 @@ const app = express();
 // ================= DB =================
 connectDB();
 
-// ================= CORS CONFIG =================
+// ================= CORS =================
 const allowedOrigins = [
   "http://localhost:5173",
   "https://resume-analyser-81bryralz-sopann.vercel.app"
 ];
 
 app.use(cors({
-  origin: [
-    "http://localhost:5173",
-    "https://resume-analyser-81bryralz-sopann.vercel.app"
-  ],
-  methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
-  allowedHeaders: ["Content-Type", "Authorization"],
-  credentials: true
+  origin: function (origin, callback) {
+    // allow requests like Postman (no origin)
+    if (!origin) return callback(null, true);
+
+    if (allowedOrigins.includes(origin)) {
+      return callback(null, true);
+    }
+
+    return callback(new Error("Not allowed by CORS"));
+  }
 }));
-
-// IMPORTANT: DO NOT use app.options("*", cors())
-
-// ✅ Handle preflight requests properly
-app.options("*", cors());
 
 // ================= MIDDLEWARES =================
 app.use(express.json());
@@ -48,6 +46,7 @@ app.get("/", (req, res) => {
 app.use("/api/auth", authRoutes);
 app.use("/api/resume", resumeRoutes);
 
+// protected route
 app.get("/api/protected", protect, (req, res) => {
   res.json({
     message: "You accessed protected data",
