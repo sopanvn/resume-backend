@@ -22,20 +22,16 @@ const allowedOrigins = [
 ];
 
 app.use(cors({
-  origin: function (origin, callback) {
-    // allow requests with no origin (like Postman)
-    if (!origin) return callback(null, true);
-
-    if (allowedOrigins.includes(origin)) {
-      return callback(null, true);
-    }
-
-    return callback(new Error("Not allowed by CORS"));
-  },
+  origin: [
+    "http://localhost:5173",
+    "https://resume-analyser-81bryralz-sopann.vercel.app"
+  ],
   methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
   allowedHeaders: ["Content-Type", "Authorization"],
   credentials: true
 }));
+
+// IMPORTANT: DO NOT use app.options("*", cors())
 
 // ✅ Handle preflight requests properly
 app.options("*", cors());
