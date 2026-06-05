@@ -17,11 +17,19 @@ const app = express();
 connectDB();
 
 // Middlewares
+const allowedOrigins = [
+  "http://localhost:5173",
+  process.env.CLIENT_URL
+];
+
 app.use(cors({
-  origin: [
-    "http://localhost:5173",
-    "https://resume-analyser-itlcy25qc-sopann.vercel.app"
-  ],
+  origin: function (origin, callback) {
+    if (!origin || allowedOrigins.includes(origin)) {
+      callback(null, true);
+    } else {
+      callback(new Error("Not allowed by CORS"));
+    }
+  },
   credentials: true
 }));
 
