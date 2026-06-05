@@ -18,7 +18,11 @@ connectDB();
 
 // Middlewares
 app.use(cors({
-  origin: "*"
+  origin: [
+    "http://localhost:5173",
+    "https://resume-analyser-itlcy25qc-sopann.vercel.app"
+  ],
+  credentials: true
 }));
 
 app.use(express.json());
