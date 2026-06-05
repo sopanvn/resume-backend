@@ -19,9 +19,9 @@ connectDB();
 // Middlewares
 app.use(cors({
   origin: [
-    "http://localhost:5173",
-    "https://resume-analyser-eta-one.vercel.app/"
-  ],
+  "http://localhost:5173",
+  "https://resume-analyser-eta-one.vercel.app"
+],
   credentials: true
 }));
 
