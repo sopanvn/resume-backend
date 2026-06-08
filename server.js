@@ -8,39 +8,50 @@ const connectDB = require("./config/db");
 
 const authRoutes = require("./routes/auth");
 const resumeRoutes = require("./routes/resume");
-
 const protect = require("./middleware/authMiddleware");
 
 const app = express();
 
-// DB connection
+// ================= DB =================
 connectDB();
 
-// Middlewares
+// ================= CORS =================
+const allowedOrigins = [
+  "http://localhost:5173",
+  "https://resume-analyser-81bryralz-sopann.vercel.app",
+  "https://resume-analyser-ldi6zgvpz-sopann.vercel.app"
+];
+
 app.use(cors({
-  origin: [
-    "http://localhost:5173",
-    "https://resume-analyser-eta-one.vercel.app/"
-  ],
+  origin: function (origin, callback) {
+    // allow Postman / backend calls
+    if (!origin) return callback(null, true);
+
+    if (allowedOrigins.includes(origin)) {
+      return callback(null, true);
+    }
+
+    // IMPORTANT: do NOT block hard (prevents random CORS crash)
+    return callback(null, true);
+  },
+  methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+  allowedHeaders: ["Content-Type", "Authorization"],
   credentials: true
 }));
 
+// ================= MIDDLEWARE =================
 app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
 
 // ================= ROUTES =================
-
-// Home route
 app.get("/", (req, res) => {
   res.send("Resume Analyzer API Running");
 });
 
-// Auth routes
 app.use("/api/auth", authRoutes);
-
-// Resume routes
 app.use("/api/resume", resumeRoutes);
 
-// Protected test route
+// protected route
 app.get("/api/protected", protect, (req, res) => {
   res.json({
     message: "You accessed protected data",
@@ -49,7 +60,6 @@ app.get("/api/protected", protect, (req, res) => {
 });
 
 // ================= START SERVER =================
-
 const PORT = process.env.PORT || 5000;
 
 app.listen(PORT, () => {
